@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      preConditions:
+        - onFail: WARN
+        - and:
+            - not:
+              - columnExists:
+                  tableName: users
+                  columnName: firstname
+              - columnExists:
+                  tableName: users
+                  columnName: lastname
+              - columnExists:
+                  tableName: users
+                  columnName: email
+              - columnExists:
+                  tableName: users
+                  columnName: profile
+              - tableExists:
+                  tableName: users
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: firstname
+                  type: VARCHAR(255)
+              - column:
+                  name: lastname
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: profile
+                  type: VARCHAR(255)
+            tableName: users
+      id: 1749195758051-1
+      author: thencha (generated)

@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      context: example_context
+      preConditions:
+        - onFail: WARN
+        - not:
+            - tableExists:
+                tableName: users
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  autoIncrement: true
+                  type: INT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+                    validateUnique: true
+                    validatePrimaryKey: true
+                    validateNullable: true
+      id: 1749183137104-1
+      author: vithou
