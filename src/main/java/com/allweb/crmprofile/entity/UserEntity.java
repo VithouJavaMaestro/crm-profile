@@ -1,6 +1,7 @@
 package com.allweb.crmprofile.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "users")
@@ -15,6 +16,10 @@ public class UserEntity {
 
   private String profile;
 
+  @Column("profile_path")
+  private String profilePath;
+
+  @Column("principle_id")
   private String principleId;
 
   public String getPrincipleId() {
@@ -27,6 +32,14 @@ public class UserEntity {
 
   public String getProfile() {
     return profile;
+  }
+
+  public String getProfilePath() {
+    return profilePath;
+  }
+
+  public void setProfilePath(String profilePath) {
+    this.profilePath = profilePath;
   }
 
   public void setProfile(String profile) {

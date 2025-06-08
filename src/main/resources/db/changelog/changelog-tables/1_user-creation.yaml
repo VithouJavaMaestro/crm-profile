@@ -1,6 +1,5 @@
 databaseChangeLog:
   - changeSet:
-      context: example_context
       preConditions:
         - onFail: WARN
         - not:
@@ -21,5 +20,5 @@ databaseChangeLog:
                     validateUnique: true
                     validatePrimaryKey: true
                     validateNullable: true
-      id: 1749183137104-1
+      id: 1
       author: vithou

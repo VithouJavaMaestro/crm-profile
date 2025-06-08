@@ -3,21 +3,24 @@ databaseChangeLog:
       preConditions:
         - onFail: WARN
         - and:
+            - tableExists:
+                tableName: users
             - not:
               - columnExists:
                   tableName: users
                   columnName: firstname
+            - not:
               - columnExists:
                   tableName: users
                   columnName: lastname
+            - not:
               - columnExists:
                   tableName: users
                   columnName: email
+            - not:
               - columnExists:
                   tableName: users
                   columnName: profile
-              - tableExists:
-                  tableName: users
       changes:
         - addColumn:
             columns:
@@ -34,5 +37,5 @@ databaseChangeLog:
                   name: profile
                   type: VARCHAR(255)
             tableName: users
-      id: 1749195758051-1
-      author: thencha (generated)
+      id: 1
+      author: vithou

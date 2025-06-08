@@ -2,10 +2,12 @@ package com.allweb.crmprofile.payload;
 
 import com.allweb.crmprofile.validation.OnCreate;
 import com.allweb.crmprofile.validation.OnUpdate;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class User {
 
   private Long id;
@@ -33,12 +35,15 @@ public class User {
       groups = {OnCreate.class, OnUpdate.class})
   private String phone;
 
-  @Pattern(
-      regexp =
-          "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}",
-      message = "invalid profile",
-      groups = {OnCreate.class, OnUpdate.class})
-  private String profile;
+  private String profileId;
+
+  public String getProfileId() {
+    return profileId;
+  }
+
+  public void setProfileId(String profileId) {
+    this.profileId = profileId;
+  }
 
   public String getFirstname() {
     return firstname;
@@ -86,13 +91,5 @@ public class User {
 
   public void setPhone(String phone) {
     this.phone = phone;
-  }
-
-  public String getProfile() {
-    return profile;
-  }
-
-  public void setProfile(String profile) {
-    this.profile = profile;
   }
 }

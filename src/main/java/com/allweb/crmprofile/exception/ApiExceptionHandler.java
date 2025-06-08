@@ -1,6 +1,5 @@
 package com.allweb.crmprofile.exception;
 
-import com.crm.commons.specification.exception.BadRequestException;
 import com.crm.commons.specification.exception.Error;
 import com.crm.commons.specification.exception.SimpWebResponse;
 import com.crm.commons.specification.utils.StringUtils;
@@ -19,16 +18,12 @@ public class ApiExceptionHandler {
 
   public static final String INVALID_REQUEST = "invalid_request";
 
-  public static final String UNEXPECTED_ERROR = "unexpected_error";
   private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
   @ExceptionHandler(WebExchangeBindException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Mono<SimpWebResponse> handleMethodArgumentNotValidException(WebExchangeBindException e) {
     FieldError fieldError = e.getBindingResult().getFieldError();
-    if (fieldError == null) {
-      return Mono.just(new SimpWebResponse(INVALID_REQUEST, INVALID_REQUEST));
-    }
     String errorMessage = fieldError.getDefaultMessage();
     return Mono.just(new SimpWebResponse(errorMessage, INVALID_REQUEST));
   }
@@ -41,7 +36,7 @@ public class ApiExceptionHandler {
           Error error = e.getClass().getAnnotation(Error.class);
           SimpWebResponse simpWebResponse;
           if (error == null) {
-            simpWebResponse = new SimpWebResponse(UNEXPECTED_ERROR, "server_error");
+            simpWebResponse = new SimpWebResponse(e.getMessage(), "server_error");
           } else {
             String message = error.message();
             if (!StringUtils.hasText(message)) {
