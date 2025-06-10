@@ -37,13 +37,9 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<Flux<User>> getUsers(
-      @RequestParam(value = "filter", required = false) String filter) {
-    return ResponseEntity.ok(userService.getUsers(filter));
-  }
-
-  @GetMapping("/principleIds/{ids}")
-  public ResponseEntity<Flux<User>> getUserByIds(@PathVariable("ids") List<String> ids) {
-    return ResponseEntity.ok(userService.getUserByIds(ids));
+      @RequestParam(value = "filter", required = false) String filter,
+      @RequestParam(value = "ids", required = false) List<String> ids) {
+    return ResponseEntity.ok(userService.getUsers(filter, ids));
   }
 
   @GetMapping("/profile/{filename}")

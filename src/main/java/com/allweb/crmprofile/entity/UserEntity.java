@@ -1,26 +1,46 @@
 package com.allweb.crmprofile.entity;
 
+import static com.allweb.crmprofile.constants.UserEntityColumns.*;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "users")
 public class UserEntity {
-  @Id private Long id;
 
+  @Id
+  @Column(ID)
+  private Long id;
+
+  @Column(FIRSTNAME)
   private String firstname;
 
+  @Column(LASTNAME)
   private String lastname;
 
+  @Column(EMAIL)
   private String email;
 
+  @Column(PROFILE)
   private String profile;
 
-  @Column("profile_path")
+  @Column(PROFILE_PATH)
   private String profilePath;
 
-  @Column("principle_id")
+  @Column(PRINCIPLE_ID)
   private String principleId;
+
+  @Column(PHONE)
+  private String phone;
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
 
   public String getPrincipleId() {
     return principleId;

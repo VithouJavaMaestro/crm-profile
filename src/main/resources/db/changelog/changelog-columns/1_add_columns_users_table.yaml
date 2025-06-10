@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: initialize-default-column-for-users-table
+      author: vithou
+      preConditions:
+        - onFail: WARN
+        - tableExists:
+            tableName: users
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: firstname
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: lastname
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: profile
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: profile_path
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: principle_id
+                  type: VARCHAR(255)
+            tableName: users
+        - addColumn:
+            columns:
+              - column:
+                  name: phone
+                  type: VARCHAR(255)
+            tableName: users
+

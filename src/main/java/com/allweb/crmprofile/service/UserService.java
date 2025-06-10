@@ -1,6 +1,8 @@
 package com.allweb.crmprofile.service;
 
 import com.allweb.crmprofile.client.OAuth2Client;
+import com.allweb.crmprofile.constants.UserEntityColumns;
+import com.allweb.crmprofile.criteria.CriteriaUtils;
 import com.allweb.crmprofile.entity.UserEntity;
 import com.allweb.crmprofile.io.StorageConfigurationProperties;
 import com.allweb.crmprofile.payload.OidcUser;
@@ -10,10 +12,7 @@ import com.crm.commons.specification.exception.BadRequestException;
 import com.crm.commons.specification.utils.IOUtils;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -23,12 +22,19 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.CriteriaDefinition;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.data.util.Pair;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static com.allweb.crmprofile.criteria.CriteriaUtils.*;
 
 @Service
 public class UserService {
@@ -39,6 +45,8 @@ public class UserService {
   private final Path profileDir;
 
   public static final Log log = LogFactory.getLog(UserService.class);
+
+  private final R2dbcEntityTemplate r2dbcEntityOperations;
 
   public static final ExampleMatcher.GenericPropertyMatcher CONTAIN_MATCHER =
       ofMatcher(ExampleMatcher.StringMatcher.CONTAINING);
@@ -52,48 +60,30 @@ public class UserService {
   }
 
   public UserService(
-      UserRepository userRepository,
-      OAuth2Client oauth2Client,
-      StorageConfigurationProperties properties) {
+          UserRepository userRepository,
+          OAuth2Client oauth2Client,
+          StorageConfigurationProperties properties, R2dbcEntityTemplate r2dbcEntityOperations1) {
     this.userRepository = userRepository;
     this.oauth2Client = oauth2Client;
     this.profileDir = properties.resolve("profile");
+    this.r2dbcEntityOperations = r2dbcEntityOperations1;
     if (this.profileDir.toFile().mkdir()) {
       log.info("directory profile does not exists create a new one");
     }
   }
 
   @Transactional
-  public Flux<User> getUserByIds(List<String> ids) {
-    return userRepository.findAllByPrincipleIdIn(ids).map(UserService::entityToUser);
-  }
+  public Flux<User> getUsers(String filter, List<String> principleIds) {
 
-  @Transactional
-  public Flux<User> getUsers(String filter) {
-    return userRepository
-        .findAll(
-            new Example<>() {
-              @Override
-              public UserEntity getProbe() {
-                UserEntity user = new UserEntity();
-                user.setFirstname(filter);
-                user.setLastname(filter);
-                user.setEmail(filter);
-                user.setPrincipleId(filter);
-                return user;
-              }
+    Criteria criteria = Criteria.from(like(UserEntityColumns.FIRSTNAME, filter, MatchMode.CONTAINS))
+            .or(like(UserEntityColumns.LASTNAME, filter, MatchMode.CONTAINS))
+            .or(like(UserEntityColumns.EMAIL, filter, MatchMode.CONTAINS)
+            .or(like(UserEntityColumns.PROFILE, filter, MatchMode.CONTAINS)
+            .or(like(UserEntityColumns.PHONE, filter, MatchMode.CONTAINS))))
+            .and(in(UserEntityColumns.PRINCIPLE_ID, principleIds));
 
-              @Override
-              public ExampleMatcher getMatcher() {
-                return ExampleMatcher.matchingAny()
-                    .withMatcher("principleId", EXACT_MATCHER)
-                    .withMatcher("firstname", CONTAIN_MATCHER)
-                    .withMatcher("lastname", CONTAIN_MATCHER)
-                    .withMatcher("email", CONTAIN_MATCHER)
-                    .withMatcher("profileId", CONTAIN_MATCHER);
-              }
-            })
-        .map(UserService::entityToUser);
+    return r2dbcEntityOperations.select(Query.query(criteria), UserEntity.class)
+            .map(UserService::entityToUser);
   }
 
   public Flux<DataBuffer> readProfile(String filename) {
@@ -174,7 +164,9 @@ public class UserService {
     user.setFirstname(userEntity.getFirstname());
     user.setLastname(userEntity.getLastname());
     user.setEmail(userEntity.getEmail());
+    user.setPhone(userEntity.getPhone());
     user.setProfileId(userEntity.getProfile());
+    user.setPrincipleId(userEntity.getPrincipleId());
     return user;
   }
 
@@ -185,6 +177,7 @@ public class UserService {
     userEntity.setEmail(request.getEmail());
     userEntity.setProfile(pair.getFirst());
     userEntity.setProfilePath(pair.getSecond());
+    userEntity.setPhone(request.getPhone());
     return userEntity;
   }
 

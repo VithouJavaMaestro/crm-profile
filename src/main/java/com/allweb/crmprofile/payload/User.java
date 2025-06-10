@@ -37,6 +37,16 @@ public class User {
 
   private String profileId;
 
+  private String principleId;
+
+  public String getPrincipleId() {
+    return principleId;
+  }
+
+  public void setPrincipleId(String principleId) {
+    this.principleId = principleId;
+  }
+
   public String getProfileId() {
     return profileId;
   }
