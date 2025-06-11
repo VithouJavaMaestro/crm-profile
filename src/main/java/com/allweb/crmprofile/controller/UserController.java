@@ -1,10 +1,9 @@
 package com.allweb.crmprofile.controller;
 
-import com.allweb.crmprofile.client.OAuth2Client;
 import com.allweb.crmprofile.payload.User;
 import com.allweb.crmprofile.service.UserService;
 import com.allweb.crmprofile.validation.OnCreate;
-import com.crm.commons.specification.utils.GenericHashMap;
+import java.util.List;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -15,8 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -30,16 +27,25 @@ public class UserController {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<Mono<User>> createUser(
-      @Validated(value = OnCreate.class) @ModelAttribute User user,
-      @RequestPart FilePart profile) {
+      @Validated(value = OnCreate.class) @ModelAttribute User user, @RequestPart FilePart profile) {
     return ResponseEntity.ok(userService.createUser(profile, user));
   }
 
   @GetMapping
   public ResponseEntity<Flux<User>> getUsers(
       @RequestParam(value = "filter", required = false) String filter,
-      @RequestParam(value = "ids", required = false) List<String> ids) {
+      @RequestParam(value = "ids", required = false) List<Long> ids) {
     return ResponseEntity.ok(userService.getUsers(filter, ids));
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Mono<User>> findById(@PathVariable("id") Long id) {
+    return ResponseEntity.ok(userService.getUser(id));
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<Mono<User>> me() {
+    return ResponseEntity.ok(userService.me());
   }
 
   @GetMapping("/profile/{filename}")

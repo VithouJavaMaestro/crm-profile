@@ -10,4 +10,6 @@ public interface UserRepository extends R2dbcRepository<UserEntity, Long> {
   Mono<Boolean> existsUserEntityByEmail(String email);
 
   Flux<UserEntity> findAllByPrincipleIdIn(List<String> ids);
+
+  Mono<UserEntity> findByPrincipleId(String principleId);
 }

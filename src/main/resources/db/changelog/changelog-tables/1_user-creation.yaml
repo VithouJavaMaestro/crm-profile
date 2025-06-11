@@ -20,5 +20,5 @@ databaseChangeLog:
                     validateUnique: true
                     validatePrimaryKey: true
                     validateNullable: true
-      id: 1
+      id: create-users-table
       author: vithou

@@ -2,10 +2,13 @@ databaseChangeLog:
   - changeSet:
       id: initialize-default-column-for-users-table
       author: vithou
+      runInTransaction: true
+      failOnError: true
       preConditions:
         - onFail: WARN
-        - tableExists:
-            tableName: users
+        - and:
+          - tableExists:
+              tableName: users
       changes:
         - addColumn:
             columns:
