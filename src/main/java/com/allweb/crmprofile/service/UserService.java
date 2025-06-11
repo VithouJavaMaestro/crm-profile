@@ -11,7 +11,6 @@ import com.allweb.crmprofile.payload.User;
 import com.allweb.crmprofile.repository.UserRepository;
 import com.crm.commons.specification.exception.BadRequestException;
 import com.crm.commons.specification.exception.NotFoundException;
-import com.crm.commons.specification.exception.UnAuthorizedException;
 import com.crm.commons.specification.utils.IOUtils;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -91,7 +90,7 @@ public class UserService {
   public Mono<User> me() {
     return userIdentityService
         .getUserIdentity()
-        .switchIfEmpty(Mono.error(new UnAuthorizedException("User not logged in")))
+        .switchIfEmpty(Mono.error(new BadRequestException("User not logged in")))
         .flatMap(userIdentity -> findByPrincipalId(userIdentity.getId()));
   }
 
